@@ -1,0 +1,24 @@
+Assignment 1a reflection
+Author: Luyun Li   studentID:1586333
+luyunli@student.unimelb.edu.au
+
+1.behaviours:
+a)Occasionally, the system gets stuck during simulation(not frequently and will be evaluated further);
+b)Nurses recruit orderlies early and hold them for a considerable duration. For example, a nurse recruits orderlies when a patient enters the treatment room but doesn’t use them until treatment concludes. So, a nurse occupies 3 orderlies throughout the entire treatment process (this wasn't identified as problematic, but it does present an opportunity for potential optimization).
+
+2.potential problems:
+a)Deadlock: The current system implementation is not flawless and is susceptible to deadlock. During simulation, I observed orderlies being held by the waiting patient, preventing others from recruiting sufficient orderlies to proceed. For example, with 2 patients waiting between foyer and triage, occupying 6 orderlies, only 2 available orderlies based on the default parameters, treated patients cannot leave the treatment room. This caused the system to stall, leading to deadlock.
+b)Starvation Risk: Another concern is the potential for starvation. Due to the limited orderlies, nurses may intensively compete for possession of orderlies. Consequently, there is a possibility that a nurse may fail to recruit orderlies constantly, leading to starvation
+
+3.source of problems:
+The main issue arises from insufficient resources(orderlies), hindering the system’s continuous operation. The competition between nurses for orderlies lead to starvation and deadlock, compromising liveness and safety of this system. Moreover, the root cause of this problem is the disparity between production and consumption rate. Producer generate patients constantly, however patients undergo multiple processes before exiting, creating a large gap between production and discharge rate. This causes system stagnation.
+
+4.key decision
+The first decision involves setting up the main loop in the run() method of the Nurse class, as they are responsible for transporting patients between locations. Each department, implemented as monitors, has synchronized methods for accessing shared data—patients, in this case. Each department has enter() and leave() methods, and the Foyer also has arriveAtEd() and departFromED() methods. To facilitate the transfer of a patient to the next location, we utilize concurrency features such as wait() and notifyAll() to ensure that it is feasible to do so (e.g., the location is available, etc.). The Specialist is designed similarly to the Nurse as an active process, with its own loop.
+
+5.Insight
+After identifying potential issues and their sources, I conducted experiments. Initially, I set orderlies and nurses to high numbers (e.g., 100 orderlies, 30 nurses), resulting in smooth and fast system operation.Then I try to analyze parameter relationships. In default settings, the system stuck as 2 nurses held 6 orderlies leaving only two for the third nurse. This inspired me to consider: if (nurse*transfer_orderlies)>=orderlies, then the probability of deadlock decreased. Proper parameters ensured system operation without deadlocks, enhancing safety and liveness.
+Additionally, I proposed possible solutions: a. Form a rule for Nurse to voluntarily release orderlies after a long duration. b.Restrict the number of patients arrivals in the foyer based on available orderlies, ensuring each patient and nurse have sufficient transfer orderlies for progression.
+
+
+(487 word excluding the title)

@@ -1,0 +1,42 @@
+Assignment 1a reflection
+Author: Luyun Li   studentID:1586333
+luyunli@student.unimelb.edu.au
+
+1. What (if any) problems did you find in your original model as a result of using LTSA?
+In the original model, an issue emerged when utilizing LTSA. After compiling the LTSA model, the output showed a potential deadlock in this simulation. Specifically, here is a possible trace to trigger the deadlock (printed in LTSA):
+Trace to DEADLOCK:
+	arrive_at_ED
+	nurse.1.allocate_patient
+	nurse.1.recruit_orderlies
+	nurse.1.leave_foyer
+	arrive_at_ED
+	nurse.1.enter_triage
+	nurse.2.allocate_patient
+	specialist_enters_treatment
+	print_count.5
+	nurse.1.release_orderlies
+	print_count.8
+	nurse.2.recruit_orderlies
+	nurse.2.leave_foyer
+	arrive_at_ED
+	nurse.3.allocate_patient
+	print_count.5
+	nurse.3.recruit_orderlies
+	nurse.3.leave_foyer
+	arrive_at_ED
+	print_count.2
+The 'print_count.N' action represents number of available orderlies left. Deadlock occurred when orderlies were being held by nurse transferring waiting patients, preventing the remaining nurse from recruiting sufficient orderlies to proceed. Note that this situation occurred with the default parameter definition: 3 nurses and 8 orderlies, when only 2 orderlies were left, and a nurse was waiting."
+
+2. Had you identified these in your Java implementation?If not, why do you think you picked these up now and not before submitting Assignment 1a?
+I had identified the same deadlock in Java implementation and reported in reflection. But there were differences in detecting the deadlock between Java and FSP: in Java, the deadlock occurred only with probability, not with certainty. The simulation ran smoothly in some scenarios, and only after trying several times and observing the stuck sequence myself could the deadlock be found.  However, the use of LTSA highlighted potential deadlock that were not immediately obvious in the Java code; it also provides deadlock traces in the output. Additionally, proper use of property and progress is also insightful in ensuring the safety and liveness of models. Here, using progress help identified insufficient orderlies. Thus,  FSP is a more systematic tool compared to Java.
+
+
+3.What was the reasoning behind the changes you suggested in your modified model?Are there any trade-offs in system performance associated with your suggestion?
+The main idea of modified version is providing sufficient orderlies. If the system meets this equation: Total_Available_Orderlies >= Number_of_Nurses * Number_of_Orderlies_Needed_for_Transfer, the deadlock is resolved. This equation ensures that each nurse can be allocated with enough orderlies, addressing the root cause of deadlock. It breaks the "wait-for cycle" rule of Coffman conditions by always offering enough orderlies. However, it is relatively simple and clearly comes with trade-offs. Having more orderlies in the system consumes additional resources on the computer.
+I also came up with another version but found it difficult to simulate by FSP. By introducing rules for orderlies allocation - nurses voluntarily release orderlies after holding a certain duration. This breaks the "wait-for cycle" as well and should be useful. But time duration can't be monitored using LTSA, so this solution is just an idea. There ‘s also a trade-off for this solution, the efficiency of the system is reduced because releasing orderlies voluntarily is time consuming.
+
+
+4.If you did not find problems with your original implementation, were you convinced when you submitted Assignment 1a that no problems existed? Why did you believe this? Do you still believe there are no problems?
+I did found problems in the original Java code, but the trigger condition for deadlock was not clear, and I wasn't confident that deadlock would occur. However, after simulating by LTSA and implementing safety and liveness checks, I could precisely track deadlocks and gain more confidence in identifying them. Therefore, I would say that LTSA is a valuable tool for identifying deadlocks and ensuring the system’s safety and liveness. This project provided me with an excellent opportunity to learn how to use FSP and LTSA to model and observe potential problems in a concurrent system.
+
+(490 word exclude the questions)
